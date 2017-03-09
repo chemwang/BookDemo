@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Image Gallery</title>
+	
+
+	<style>
+		body,ul,li{
+			padding:0;
+		}
+		li{
+			list-style: none;
+		}
+		body{
+			margin: 1em 10%;
+			background-color: #ccc;
+			color: #333;
+		}
+		.gallery-thumb li{
+			display: inline-block;margin-right:40px;
+			width:100px;height: 60px;
+			opacity: 0.6;
+		}
+		.gallery-thumb .active{
+			opacity: 1;
+		}
+		.gallery-thumb img{
+			width: 100%;
+		}
+		.gallery-list li{
+			display:none;
+			width:600px;height: 350px;
+			opacity: 0;
+		}
+		.gallery-list a{
+			display:block;
+		}
+		.gallery-list img{
+			width:100%;
+		}
+		.placeholder{
+			width:600px;height: 350px;
+		}
+		.placeholder img{
+			width:600px;height: 350px;
+		}
+	</style>
+</head>
+<body>
+		<h1>Snapshots</h1>
+		<div class="gallery-wrapper">
+			<ul class="gallery-thumb">
+				<li>
+					<img src="img/thumb/img1.gif" alt="img1" />
+				</li>
+				<li>
+					<img src="img/thumb/img2.gif" alt="img2" />
+				</li>
+				<li>
+					<img src="img/thumb/img3.gif" alt="img3" />
+				</li>
+				<li>
+					<img src="img/thumb/img4.gif" alt="img4" />
+				</li>
+			</ul>	
+			<div class="placeholder">
+					<img src="img/placeholder.jpg" alt="placeholder" />
+			</div>
+			<ul class="gallery-list">
+				<li class="active">
+					<a href="img/img1-big.jpg" target="_blank" title="乌云漫步">
+						<img src="img/img1.jpg" alt="img1" />
+					</a>
+				</li>
+				<li>
+					<a href="img/img2-big.jpg" target="_blank" title="风和日丽">
+						<img src="img/img2.jpg" alt="img2" />
+					</a>
+				</li>
+				<li>
+					<a href="img/img3-big.jpg" target="_blank" title="晴空万里">
+						<img src="img/img3.jpg" alt="img3" />
+					</a>
+				</li>
+				<li>
+					<a href="img/img4-big.jpg" target="_blank" title="气势磅礴">
+						<img src="img/img4.jpg" alt="img4" />
+					</a>
+				</li>
+			</ul>
+			<p class="gallery-text">Choose an image</p>
+		</div>
+		
+		
+<script>
+		var thumbItem = document.getElementsByClassName("gallery-thumb")[0].getElementsByTagName("li"),
+				imgItem = document.getElementsByClassName("gallery-list")[0].getElementsByTagName("li"),
+				galleryDes = document.getElementsByClassName("gallery-text")[0],
+				placeholder = document.getElementsByClassName("placeholder")[0];
+
+		var len = thumbItem.length;
+		
+		for(var i=0;i<len;i++){
+			thumbItem[i].index = i;
+			thumbItem[i].onclick = function(){
+				for(var i =0;i<len;i++){
+					thumbItem[i].style.opacity = 0.6;
+					imgItem[i].style.display = "none";
+					imgItem[i].style.opacity = 0;
+				}
+				placeholder.style.display = "none";
+				this.style.opacity = 1;
+				imgItem[this.index].style.display = "block";
+				startMove(imgItem[this.index],{opacity:100});
+				
+				var imgTitle = imgItem[this.index].getElementsByTagName("a")[0].title;
+				galleryDes.innerHTML = imgTitle;
+
+			};
+			
+		}
+		
+		
+
+		
+//运动函数
+function startMove(obj,json,endFn){
+	clearInterval(obj.timer);
+
+	obj.timer = setInterval(function(){
+		var bBtn = true;
+		
+		for(var attr in  json){
+			var iCur = 0;
+			if( attr == "opacity"){
+				iCur = Math.round(parseFloat(getStyle(obj,attr))*100);
+			} else {
+				iCur = parseInt(getStyle(obj,attr));
+			}
+			
+			var iSpeed = (json[attr] - iCur)/10;
+			iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed);
+			
+			if(iCur != json[attr]){
+				bBtn = false;
+			}
+			
+			if(attr == "opacity"){
+				obj.style.opacity = (iCur + iSpeed)/100;
+				obj.style.filter = 'alpha(opacity='+(iCur + iSpeed)+')';
+			} else {
+				
+				obj.style[attr] = iCur + iSpeed + 'px';
+			}
+			
+			if(bBtn){
+				clearInterval(obj.timer);
+				if(endFn){
+					endFn.call(obj);
+				}
+			}
+			
+		}
+	},30);
+	
+}
+
+function getStyle(obj,attr){
+	return obj.currentStyle ? obj.currentStyle[attr] : getComputedStyle(obj)[attr];
+}		
+
+</script>
+		
+</body>
+</html>
